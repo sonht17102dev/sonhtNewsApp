@@ -1,0 +1,10 @@
+* {
+	box-sizing: border-box;	
+}
+ .row::after {
+	content: "";
+	display: block;
+	clear: both;
+  }
+
+
