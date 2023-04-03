@@ -1,8 +1,8 @@
-'use strict'
+"use strict";
 
-const inputTask = document.getElementById('input-task');
-const btnAdd = document.getElementById('btn-add');
-const todoList = document.getElementById('todo-list');
+const inputTask = document.getElementById("input-task");
+const btnAdd = document.getElementById("btn-add");
+const todoList = document.getElementById("todo-list");
 
 const KEY = "USER_ARRAY";
 const userArr = JSON.parse(getFromStorage(KEY)) || [];
@@ -16,88 +16,61 @@ let todoArray = JSON.parse(getFromStorage(todoKEY)) || [];
 console.log(todoArray);
 
 // hàm clear input Task khi người nhập liệu hoàn tất
-const clearTask= function(){
-  inputTask.value = '';
-}
+const clearTask = function () {
+  inputTask.value = "";
+};
 // Hàm xóa task khỏi danh sách khi click vào '×'
-// const deleteTask = function(userTask,event){
-  const deleteTask = function(userTask){
-//  console.log('event',event);
-//   event.preventDefault();
-  if (confirm('Are You Sure?')){
-    for (let i= 0; i< todoArray.length; i++){
-      if (todoArray[i].task  === userTask){
+const deleteTask = function (userTask) {
+  if (confirm("Are You Sure?")) {
+    for (let i = 0; i < todoArray.length; i++) {
+      if (todoArray[i].task === userTask) {
         todoArray.splice(i, 1);
       }
-    }   
+    }
+    displayTask(todoArray);
   }
-  
-  displayTask(todoArray);
   saveToStorage(todoKEY, JSON.stringify(todoArray));
 };
 
-// document.querySelectorAll('.close').addEventListener('click',function(event){
-//   event.preventDefautl();
-// });
-
 const displayTask = function () {
- 
   let tableBodyEl = document.getElementById("todo-list");
   tableBodyEl.innerHTML = "";
+  // todoArrNew.forEach((element, index) => {
   todoArray.forEach((element, index) => {
-    
-    if(currentUser[0].userName === element.owner){
-    const row = document.createElement("li");
-    // row.innerHTML = `${element.task}<span class="close" onclick="deleteTask('${element.task}',event)">×</span>`;
-    row.innerHTML = `${element.task}<span class="close" onclick="deleteTask('${element.task}')">×</span>`;
-    row.addEventListener("click", function(e) {
-      // e.preventDefault();
-      // console.log(e.target);
-      // if(e.target !== element.children[0]) {
-        console.log(element.children[index])
-      row.classList.toggle("checked");
-      row.className === "checked" ? todoArray[index].isDone = true : todoArray[index].isDone = false ;
-      todoArray[index].isDone === true ? row.classList.add("checked"): row.classList.remove("checked");
-      // e.stopPropagation();
-      console.log(todoArray)
-      // saveToStorage(todoKEY, JSON.stringify(todoArray));
+    // Hiển thị các Task của owner hiện tại
+    //Kiem tra xem owner co phai la current user, neu phai thi moi cho render dong do, khong thi bo qua
+    if (currentUser[0].userName === element.owner) {
+      const row = document.createElement("li");
+      row.innerHTML = `${element.task}<span class="close" onclick="deleteTask('${element.task}')">×</span>`;
+      row.addEventListener("click", () => {
+        //Khi click vào một Task thì bạn có thể đánh dấu là Task đó đã hoàn thành hoặc chưa hoàn thành
+        row.classList.toggle("checked");
+        // cập nhật isDone vào Task tương ứng hoàn thành hay chưa hoàn thành
+        row.className === "checked"
+          ? (todoArray[index].isDone = true)
+          : (todoArray[index].isDone = false);
+        // cập nhật vào LocalStorage
+        saveToStorage(todoKEY, JSON.stringify(todoArray));
+      });
+      tableBodyEl.appendChild(row);
+
+      //Khi isDone được cập nhật thì cập nhật check vào task nếu đã hoàn thành
+      todoArray[index].isDone === true
+        ? row.classList.add("checked")
+        : row.classList.remove("checked");
       saveToStorage(todoKEY, JSON.stringify(todoArray));
-      // }
-    });
-    tableBodyEl.appendChild(row);
-  }
-});
+    }
+  });
 };
-const validate = function(userTask){
-  let contentAlert = '';
-  if (!inputTask.value || inputTask.value.trim() === '')
-  contentAlert += 'Please input Task';
-  return contentAlert;
-}
 // event thêm task vào danh sách
-btnAdd.addEventListener('click', function() {
+btnAdd.addEventListener("click", function () {
   const userTask = new Task(inputTask.value, currentUser[0].userName, false);
-  let contentAlert = validate(userTask);
-  if (contentAlert.localeCompare('') === 0){
-    todoArray.push(userTask);
-    displayTask();
-    clearTask();
-  } else {
-    alert(contentAlert);
-  }
+  todoArray.push(userTask);
+  displayTask();
+  clearTask();
   //Lưu dữ liệu todoList vào LocalStorage.
-    saveToStorage(todoKEY, JSON.stringify(todoArray));
-    console.log(todoArray)
-
+  saveToStorage(todoKEY, JSON.stringify(todoArray));
+  // console.log(todoArray)
 });
-
 
 displayTask(todoArray);
-
-
-
-
-
-
-
-
